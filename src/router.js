@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-(function ($) {
+(function () {
     "use strict";
 
     /**
@@ -102,8 +102,15 @@
      * Updates active links
      */
     Router.parseLinks = function () {
-        $("a.active").removeClass("active");
-        $("a[href=\"" + location.hash + "\"]").addClass("active");
+        var links = document.body.querySelectorAll("a.active");
+        for (var i = 0; i < links.length; i += 1) {
+            links[i].className = links[i].className.replace(" active", "");
+        }
+
+        links = document.body.querySelectorAll("a[href=\"" + location.hash + "\"]");
+        for (i = 0; i < links.length; i += 1) {
+            links[i].className += " active";
+        }
     };
 
     /**
@@ -170,11 +177,16 @@
      * within the specified target element
      * @param template
      * @param data
-     * @param options
+     * @param target
      */
-    Router.render = function (template, data, options) {
-        options = options || {};
-        $(options.target || Router.target).html(template);
+    Router.render = function (template, data, target) {
+        if (typeof target === "string") {
+            target = document.body.querySelector(target);
+        }
+
+        if (typeof target === "object") {
+            target.innerHTML = template;
+        }
     };
 
     /**
@@ -216,7 +228,11 @@
                 data = options.data.call(route);
 
             } else if (typeof options.data === "object") {
-                $.extend(data, options.data);
+                for (var key in options.data) {
+                    if (options.data.hasOwnProperty(key)) {
+                        data.key = options.data[key];
+                    }
+                }
             }
         }
 
@@ -226,9 +242,7 @@
         }
 
         // Render the template
-        var tpl = Router.render.call(route, template, data, {
-            target: options.target || Router.target
-        });
+        var tpl = Router.render.call(route, template, data, options.target || Router.target);
 
         // Execute the after callback
         if (typeof options.after === "function") {
@@ -240,13 +254,13 @@
     };
 
     // Render the path when the DOM is ready
-    $(document).ready(function () {
+    document.addEventListener("DOMContentLoaded", function () {
         Router.refresh();
 
         // Watch any changes in the path
-        $(window).on("hashchange.router", function () {
+        window.addEventListener("hashchange", function () {
             Router.refresh();
         });
     });
 
-})(jQuery);
+})();
