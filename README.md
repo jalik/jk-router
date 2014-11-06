@@ -10,11 +10,25 @@ Each time this path is reached, the associated callback will be called.
 ```js
 Router.route("/", function() {
     console.log("you requested the root path");
-    // do what you want
 });
 ```
 
 ***Note that you can attach several callbacks to the same route, they will be executed one after one.***
+
+## Managing route errors
+
+If there is not route defined for a path, you can display an error by setting the ***Router.notFound*** variable.
+It accepts a string like any HTML content or a function that will be called each time the not found error occurs.
+
+```js
+// Display static message
+Router.notFound = "Page not found";
+
+// Display a custom message
+Router.notFound = function() {
+    this.render("The page at " + this.path +" does not exist.");
+};
+```
 
 ## Rendering the content of a route
 
@@ -56,8 +70,8 @@ Router.route("/hello", function() {
 
 ## Passing and getting parameters
 
-You can of course have dynamic paths, and get the params from these paths inside the route callback.
-All parameters must be preceded by ":", you can have as much parameters as you want as long as they are unique, they will be available in the ***this.params*** object.
+You can of course monitor dynamic paths, and get the params from these paths inside the route callback.
+All parameters must be preceded by "***:***", you can have as much parameters as you want as long as they are unique and they will be available in the ***this.params*** object.
 
 ```js
 Router.route("/hello/:name", function() {
@@ -76,7 +90,6 @@ The following example uses ***Handlebars*** as the template engine.
 Router.render = function(content, data, target) {
     var template = Handlebars.compile(content);
     target.innerHTML = template(data);
-    return target;
 };
 Router.route("/hello/:name", function() {
     this.render("Hello {{name}}", {

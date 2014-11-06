@@ -171,7 +171,14 @@
                 callback.call(route);
             }
             else {
-                Router.render(Router.notFound, route);
+                console.error("No route defined for " + path);
+
+                if (typeof Router.notFound === "string") {
+                    route.render(Router.notFound);
+                }
+                else if (typeof Router.notFound === "function") {
+                    Router.notFound.call(route);
+                }
             }
         }
     };
@@ -222,6 +229,11 @@
         var data = {};
         var target = options.target || Router.target;
 
+        // Find the target element
+        if (typeof target === "string") {
+            target = document.body.querySelector(target);
+        }
+
         // Merge data
         if (options.data) {
             if (typeof options.data === "function") {
@@ -238,20 +250,18 @@
 
         // Execute the before callback
         if (typeof options.before === "function") {
-            options.before.call(route);
+            options.before.call(route, target);
         }
 
-        // Find the target element
-        if (typeof target === "string") {
-            target = document.body.querySelector(target);
-        }
+        // Remove the previous content
+        target.innerHTML = "";
 
         // Render the template
-        var tpl = Router.render.call(route, content, data, target);
+        Router.render.call(route, content, data, target);
 
         // Execute the after callback
         if (typeof options.after === "function") {
-            options.after.call(route, tpl);
+            options.after.call(route, target);
         }
 
         // Update all links in the page
