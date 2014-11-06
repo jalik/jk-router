@@ -1,0 +1,20 @@
+{
+  "name": "router",
+  "version": "0.1.0",
+  "description": "A client side router for JavaScript",
+  "license": "MIT",
+  "author": {
+    "name": "Karl STEIN",
+    "email": "karl.stein.pro@gmail.com",
+    "url": "https://github.com/jalik"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jalik/router.js.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-uglify": "~0.6.0",
+    "grunt-contrib-concat": "~0.5.0"
+  }
+}
