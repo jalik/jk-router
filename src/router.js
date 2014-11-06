@@ -56,6 +56,11 @@
      */
     Router.paths = {};
     /**
+     * The current route
+     * @type {null}
+     */
+    Router.route = null;
+    /**
      * The target element where the router will render the page
      * @type {string}
      */
@@ -165,10 +170,16 @@
             }
 
             if (route && callback) {
+                // Add this route in the history
                 if (Router.getLastPath() !== path) {
                     Router.history.push(path);
                 }
+
+                // Execute the route callback
                 callback.call(route);
+
+                // Update the current route reference
+                Router.route = route;
             }
             else {
                 console.error("No route defined for " + path);
