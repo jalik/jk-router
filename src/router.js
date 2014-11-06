@@ -31,6 +31,11 @@
      */
     window.Router = {};
     /**
+     * Render the current path when the DOM is ready
+     * @type {boolean}
+     */
+    Router.autorun = true;
+    /**
      * THe previous path of the router
      * @type {Array}
      */
@@ -167,7 +172,6 @@
             }
             else {
                 Router.render(Router.notFound, route);
-//                throw new Error("No route found for path `" + path + "`");
             }
         }
     };
@@ -175,17 +179,13 @@
     /**
      * This method renders the content of the route into the page
      * within the specified target element
-     * @param template
+     * @param content
      * @param data
      * @param target
      */
-    Router.render = function (template, data, target) {
-        if (typeof target === "string") {
-            target = document.body.querySelector(target);
-        }
-
+    Router.render = function (content, data, target) {
         if (typeof target === "object") {
-            target.innerHTML = template;
+            target.innerHTML = content;
         }
     };
 
@@ -212,15 +212,15 @@
     Router.Route.prototype.path = null;
 
     /**
-     * Renders a template
-     * @param template
+     * Renders a route content
+     * @param content
      * @param options
      */
-    Router.Route.prototype.render = function (template, options) {
+    Router.Route.prototype.render = function (content, options) {
+        options = options || {};
         var route = this;
         var data = {};
-
-        options = options || {};
+        var target = options.target || Router.target;
 
         // Merge data
         if (options.data) {
@@ -241,8 +241,13 @@
             options.before.call(route);
         }
 
+        // Find the target element
+        if (typeof target === "string") {
+            target = document.body.querySelector(target);
+        }
+
         // Render the template
-        var tpl = Router.render.call(route, template, data, options.target || Router.target);
+        var tpl = Router.render.call(route, content, data, target);
 
         // Execute the after callback
         if (typeof options.after === "function") {
@@ -255,7 +260,9 @@
 
     // Render the path when the DOM is ready
     document.addEventListener("DOMContentLoaded", function () {
-        Router.refresh();
+        if (Router.autorun) {
+            Router.refresh();
+        }
 
         // Watch any changes in the path
         window.addEventListener("hashchange", function () {
