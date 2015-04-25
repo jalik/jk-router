@@ -1,11 +1,12 @@
 # Router.js
 
-A simple router for client side in JavaScript.
+This router uses the hash (#) part of the URL for navigation.
 
-## Creating a route
+## Create a route
 
-To create a route, just declare the path that should be monitored using ***Router.route(path, callback)***.
-Each time this path is reached, the associated callback will be called.
+To create a route, just declare the path that should be monitored using **Router.route(path, callback)**.
+Each time the route is reached, the callback is called.
+Inside the callback, **this** refers to the current route object.
 
 ```js
 Router.route("/", function() {
@@ -13,28 +14,11 @@ Router.route("/", function() {
 });
 ```
 
-***Note that you can attach several callbacks to the same route, they will be executed one after one.***
+## Render the content of a route
 
-## Managing route errors
-
-If there is not route defined for a path, you can display an error by setting the ***Router.notFound*** variable.
-It accepts a string like any HTML content or a function that will be called each time the not found error occurs.
-
-```js
-// Display static message
-Router.notFound = "Page not found";
-
-// Display a custom message
-Router.notFound = function() {
-    this.render("The page at " + this.path +" does not exist.");
-};
-```
-
-## Rendering the content of a route
-
-The callback of a route will provide a ***Route*** object available as the ***this*** object, to render just call ***this.render(content, options)***.
-You can specify where to render using a ***target*** attribute in the options which is an HTML node object or a string containing a CSS selector.
-By default the target is ***"#yield"***, so it will renders in the node that has ***id="yield"***;
+The callback of a route will provide a **Route** object available using **this**, to render just call **this.render(content, options)**.
+You can specify where to render using a **target** attribute in the options which is an HTML node object or a string containing a CSS selector.
+By default the target is **"#yield"**, so it will renders in the node that has **id="yield"**;
 
 ```js
 Router.route("/hello", function() {
@@ -51,27 +35,21 @@ Router.route("/hello", function() {
 </body>
 ```
 
-## Monitoring route events
+## Route errors
 
-You can execute callbacks before and after the route has been rendered, simply by providing ***before*** and ***after*** callbacks.
+If there is no route defined for a path, you can handle the error by setting the **Router.notFound** attribute.
 
 ```js
-Router.route("/hello", function() {
-    this.render("Hello world", {
-        before: function() {
-            console.log("before saying hello");
-        },
-        after: function() {
-            console.log("after saying hello");
-        }
-    });
-});
+// Display a custom message
+Router.notFound = function() {
+    this.render("The page at " + this.path +" does not exist.");
+};
 ```
 
-## Passing and getting parameters
+## Route parameters
 
-You can of course monitor dynamic paths, and get the params from these paths inside the route callback.
-All parameters must be preceded by "***:***", you can have as much parameters as you want as long as they are unique and they will be available in the ***this.params*** object.
+You can of course have dynamic routes, and get the params from these routes inside the callback.
+All parameters must be preceded by "**:**", you can have as much parameters as you want as long as they are unique for that route and they will be available in **this.params**.
 
 ```js
 Router.route("/hello/:name", function() {
@@ -79,12 +57,12 @@ Router.route("/hello/:name", function() {
 });
 ```
 
-## Rendering with templates
+## Custom renderer
 
-The default behavior of the render() method is very basic, but almost everyone use templates nowadays.
-To use your favourite template engine, you must override the ***Router.render(content, data, target)*** method.
-This method is called by the ***Route.render()*** method.
-The following example uses ***Handlebars*** as the template engine.
+The default behavior of the **render()** method is to display the text given as the first argument, but almost everyone use templates nowadays.
+To use your favourite template engine, you must override the **Router.render(content, data, target)** method.
+This method is called by the **Route.render()** method.
+The following example uses **Handlebars** as the template engine.
 
 ```js
 Router.render = function(content, data, target) {
@@ -98,4 +76,25 @@ Router.route("/hello/:name", function() {
         }
     });
 });
+```
+
+## Links
+
+In your HTML files, you just have to use the path you declared for the route you want to access.
+
+```html
+<nav>
+  <a href="#/">Home</a>
+  <a href="#/contact">Contact</a>
+  <a href="#/login">Log in</a>
+</nav>
+```
+
+## Changing location
+
+You can access a route by calling the **Router.go(path)** method.
+Be sure to declare the route first.
+
+```js
+Router.go("/write-email");
 ```

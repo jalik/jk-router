@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Karl STEIN
+ * Copyright (c) 2015 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  */
 
 (function () {
-    "use strict";
+    'use strict';
 
     /**
      * The router
@@ -49,7 +49,7 @@
      * The page not found content
      * @type {string}
      */
-    Router.notFound = "page not found";
+    Router.notFound = 'page not found';
     /**
      * The paths
      * @type {{}}
@@ -64,7 +64,7 @@
      * The target element where the router will render the page
      * @type {string}
      */
-    Router.target = "#yield";
+    Router.target = '#yield';
 
     /**
      * Sets the router configuration
@@ -75,6 +75,15 @@
         if (options.notFound) {
             Router.notFound = options.notFound;
         }
+    };
+
+    /**
+     * Checks if the route exists
+     * @param path
+     * @return {boolean}
+     */
+    Router.exists = function (path) {
+        return typeof this.paths[path] === 'function';
     };
 
     /**
@@ -93,7 +102,7 @@
      * @param path
      */
     Router.go = function (path) {
-        window.location.hash = "#" + path;
+        window.location.hash = '#' + path;
     };
 
     /**
@@ -112,14 +121,14 @@
      * Updates active links
      */
     Router.parseLinks = function () {
-        var links = document.body.querySelectorAll("a.active");
+        var links = document.body.querySelectorAll('a.active');
         for (var i = 0; i < links.length; i += 1) {
-            links[i].className = links[i].className.replace(" active", "");
+            links[i].className = links[i].className.replace(' active', '');
         }
 
-        links = document.body.querySelectorAll("a[href=\"" + location.hash + "\"]");
+        links = document.body.querySelectorAll('a[href="' + location.hash + '"]');
         for (i = 0; i < links.length; i += 1) {
-            links[i].className += " active";
+            links[i].className += ' active';
         }
     };
 
@@ -128,21 +137,26 @@
      */
     Router.refresh = function () {
         // Get the current hash
-        var path = window.location.hash.replace(/^#/, "");
+        var path = window.location.hash.replace(/^#/, '');
 
-        if (path != "") {
+        if (!path) {
+            if (this.exists(path)) {
+                Router.go('/');
+            }
+        }
+        else {
             var callback = null;
             var route = new Router.Route(path);
 
             if (Router.paths[path]) {
-                if (typeof Router.paths[path] === "function") {
+                if (typeof Router.paths[path] === 'function') {
                     callback = Router.paths[path];
                 }
             } else {
                 for (var tmpPath in Router.paths) {
-                    if (Router.paths.hasOwnProperty(tmpPath) && tmpPath.indexOf(":") !== -1) {
-                        var varPattern = new RegExp(tmpPath.replace(new RegExp(":[^/]+", "g"), ":([^/]+)"));
-                        var valuePattern = new RegExp(tmpPath.replace(new RegExp(":[^/]+", "g"), "([^/]+)"));
+                    if (Router.paths.hasOwnProperty(tmpPath) && tmpPath.indexOf(':') !== -1) {
+                        var varPattern = new RegExp(tmpPath.replace(new RegExp(':[^/]+', 'g'), ':([^/]+)'));
+                        var valuePattern = new RegExp(tmpPath.replace(new RegExp(':[^/]+', 'g'), '([^/]+)'));
                         var keys = varPattern.exec(tmpPath);
                         var values = valuePattern.exec(path);
 
@@ -182,12 +196,12 @@
                 Router.route = route;
             }
             else {
-                console.error("No route defined for " + path);
+                console.error('No route defined for ' + path);
 
-                if (typeof Router.notFound === "string") {
+                if (typeof Router.notFound === 'string') {
                     route.render(Router.notFound);
                 }
-                else if (typeof Router.notFound === "function") {
+                else if (typeof Router.notFound === 'function') {
                     Router.notFound.call(route);
                 }
             }
@@ -202,7 +216,7 @@
      * @param target
      */
     Router.render = function (content, data, target) {
-        if (typeof target === "object") {
+        if (typeof target === 'object') {
             target.innerHTML = content;
         }
     };
@@ -241,16 +255,16 @@
         var target = options.target || Router.target;
 
         // Find the target element
-        if (typeof target === "string") {
+        if (typeof target === 'string') {
             target = document.body.querySelector(target);
         }
 
         // Merge data
         if (options.data) {
-            if (typeof options.data === "function") {
+            if (typeof options.data === 'function') {
                 data = options.data.call(route);
 
-            } else if (typeof options.data === "object") {
+            } else if (typeof options.data === 'object') {
                 for (var key in options.data) {
                     if (options.data.hasOwnProperty(key)) {
                         data.key = options.data[key];
@@ -260,18 +274,18 @@
         }
 
         // Execute the before callback
-        if (typeof options.before === "function") {
+        if (typeof options.before === 'function') {
             options.before.call(route, target);
         }
 
         // Remove the previous content
-        target.innerHTML = "";
+        target.innerHTML = '';
 
         // Render the template
         Router.render.call(route, content, data, target);
 
         // Execute the after callback
-        if (typeof options.after === "function") {
+        if (typeof options.after === 'function') {
             options.after.call(route, target);
         }
 
@@ -280,13 +294,13 @@
     };
 
     // Render the path when the DOM is ready
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
         if (Router.autorun) {
             Router.refresh();
         }
 
         // Watch any changes in the path
-        window.addEventListener("hashchange", function () {
+        window.addEventListener('hashchange', function () {
             Router.refresh();
         });
     });
