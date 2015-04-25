@@ -1,7 +1,7 @@
 {
   "name": "router",
   "version": "0.1.1",
-  "description": "JavaScript client side Router",
+  "description": "Fast and lightweight client side router",
   "license": "MIT",
   "author": {
     "name": "Karl STEIN",
