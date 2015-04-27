@@ -17,13 +17,13 @@ Router.route("/", function() {
 ## Render the content of a route
 
 The callback of a route will provide a **Route** object available using **this**, to render just call **this.render(content, options)**.
-You can specify where to render using a **target** attribute in the options which is an HTML node object or a string containing a CSS selector.
-By default the target is **"#yield"**, so it will renders in the node that has **id="yield"**;
+You can specify where to render using a **target** attribute in the options which is an HTML Element or a string containing the ID of the element.
+By default the target is **"yield"**, so it will renders in the node that has **id="yield"**;
 
 ```js
 Router.route("/hello", function() {
     this.render("Hello world", {
-        target: "#yield"
+        target: "yield"
     });
 });
 ```
@@ -54,6 +54,19 @@ All parameters must be preceded by "**:**", you can have as much parameters as y
 ```js
 Router.route("/hello/:name", function() {
     this.render("Hello " + this.params.name);
+});
+```
+
+## Route events
+
+You can execute code when a special route event is triggered by using the **on(event, callback)** method.
+
+```js
+Router.route("/home", function() {
+    this.render("Welcome home");
+    this.on("leave", function(){
+      console.log("Good bye home");
+    };
 });
 ```
 
@@ -90,7 +103,7 @@ In your HTML files, you just have to use the path you declared for the route you
 </nav>
 ```
 
-## Changing location
+## Go to a route
 
 You can access a route by calling the **Router.go(path)** method.
 Be sure to declare the route first.
