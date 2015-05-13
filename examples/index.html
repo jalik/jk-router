@@ -32,16 +32,28 @@
     <script src="../src/router.js"></script>
 
     <link rel="stylesheet" href="highlight.css">
-    <script src="highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
 <script>
     Router.autoRun = true;
+
+    Router.on('route', function () {
+        console.log('routing to ' + this.path);
+    });
+
+    Router.on('beforeRender', function () {
+        console.log('before ' + this.path);
+    });
+
+    Router.on('afterRender', function () {
+        console.log('after ' + this.path);
+    });
+
     // Declare not found route
     Router.notFound = function () {
         this.render($('#not-found').html());
     };
+
     // Declare root route
     Router.route('/', function () {
         this.render($('#home').html());
@@ -49,8 +61,18 @@
             console.log('good bye Home');
         });
     });
+
     Router.route('/page/:id', function () {
         this.render($('#page' + this.params.id).html());
+    });
+
+    Router.route('/forbidden', function () {
+        this.render($('#forbidden').html());
+    });
+
+    Router.route('/private', function () {
+        this.redirect('/forbidden');
+        this.render('XXXXXXX');
     });
 </script>
 <body>
@@ -61,6 +83,7 @@
         <a href="#/page/1">Page 1</a>
         <a href="#/page/2">Page 2</a>
         <a href="#/page/3">Page 3</a>
+        <a href="#/private">Private</a>
         <a href="#/not-found">Not found</a>
     </nav>
     <div id="yield">
@@ -74,6 +97,7 @@
     <div id="home">
         Welcome
     </div>
+    <div id="forbidden"><h2>Forbidden</h2></div>
     <div id="page1">
         <p>Maecenas ex libero, ornare in lacus in, rhoncus facilisis purus. Cras pulvinar, lectus at venenatis mattis,
             nulla nibh ultricies mi, id condimentum mi nulla nec lectus. Aenean vel ex feugiat, lacinia sapien sit amet,

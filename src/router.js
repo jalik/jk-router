@@ -25,6 +25,20 @@
 (function () {
     'use strict';
 
+    var redirecting = false;
+    var hooks = {};
+
+    function trigger() {
+        var event = arguments[0];
+        var thisObj = arguments[1];
+
+        if (hooks.hasOwnProperty(event)) {
+            for (var i = 0; i < hooks[event].length; i += 1) {
+                hooks[event][i].call(thisObj);
+            }
+        }
+    }
+
     /**
      * The router
      * @type {{}}
@@ -105,6 +119,39 @@
         },
 
         /**
+         * Removes a callback from an event
+         * @param event
+         * @param callback
+         */
+        off: function (event, callback) {
+            if (hooks[event] instanceof Array) {
+                var index = hooks[event].indexOf(callback);
+
+                if (index !== -1) {
+                    hooks[event].splice(index, 1);
+                }
+            }
+        },
+
+        /**
+         * Adds a callback to an event
+         * @param event
+         * @param callback
+         */
+        on: function (event, callback) {
+            if (typeof event !== 'string') {
+                throw new Error('event is not a string');
+            }
+            if (typeof callback !== 'function') {
+                throw new Error('callback is not a function');
+            }
+            if (!(hooks[event] instanceof Array)) {
+                hooks[event] = [];
+            }
+            hooks[event].push(callback);
+        },
+
+        /**
          * Updates active links
          */
         parseLinks: function () {
@@ -134,6 +181,9 @@
                 }
             } else {
                 var route = null;
+
+                // Reset redirection status
+                redirecting = false;
 
                 if (self.exists(path)) {
                     // Update current route
@@ -179,10 +229,12 @@
                         route = new Router.Route(path, self.notFound);
                     }
                 } else {
-                    // Add the route in the history
-                    if (self.getLastPath() !== path) {
-                        self.history.push(path);
-                    }
+                    trigger('route', route);
+                }
+
+                // Add the route in the history
+                if (self.getLastPath() !== path) {
+                    self.history.push(path);
                 }
 
                 // Execute the previous route leave event
@@ -254,6 +306,15 @@
     };
 
     /**
+     * Redirects to another route
+     * @param path
+     */
+    Router.Route.prototype.redirect = function (path) {
+        redirecting = true;
+        Router.go(path);
+    };
+
+    /**
      * Renders a route content
      * @param content
      * @param options
@@ -287,14 +348,22 @@
             }
         }
 
-        // Remove the previous content
-        target.innerHTML = '';
+        // Execute before render callbacks
+        trigger('beforeRender', this);
 
-        // Render the template
-        Router.render.call(route, content, data, target);
+        if (!redirecting) {
+            // Remove the previous content
+            target.innerHTML = '';
 
-        // Update all links in the page
-        Router.parseLinks();
+            // Render the template
+            Router.render.call(route, content, data, target);
+
+            // Update all links in the page
+            Router.parseLinks();
+
+            // Execute before render callbacks
+            trigger('afterRender', this);
+        }
     };
 
     // Render the path when the DOM is ready

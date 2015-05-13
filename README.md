@@ -70,6 +70,22 @@ Router.route("/home", function() {
 });
 ```
 
+## Router events
+
+Like route, you can hook functions to router's events by using the **Router.on(event, callback)** method.
+
+```js
+Router.on("route", function(){
+  console.log("routing to " + this.path);
+};
+Router.on("beforeRender", function(){
+  console.log("before rendering " + this.path);
+};
+Router.on("afterRender", function(){
+  console.log("after rendering " + this.path);
+};
+```
+
 ## Custom renderer
 
 The default behavior of the **render()** method is to display the text given as the first argument, but almost everyone use templates nowadays.
