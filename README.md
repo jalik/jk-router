@@ -4,14 +4,24 @@ This router uses the hash (#) part of the URL for navigation.
 
 ## Create a route
 
-To create a route, just declare the path that should be monitored using **Router.route(path, callback)**.
+To create a route, just declare the path that should be monitored using **Router.route(path, callback, options)**.
 Each time the route is reached, the callback is called.
 Inside the callback, **this** refers to the current route object.
 
 ```js
 Router.route("/", function() {
     console.log("you requested the root path");
+}, {
+    name : 'home'
 });
+```
+
+## Getting the path of a route
+
+If you named a route using options, you can refer to this route later in the code by calling **Router.path(name)**.
+
+```js
+console.log("Home path is " + Router.path('home'));
 ```
 
 ## Render the content of a route

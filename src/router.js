@@ -152,6 +152,26 @@
         },
 
         /**
+         * Returns the path of the named route
+         * @param name
+         * @param params
+         * @return {*}
+         */
+        path: function (name, params) {
+            for (var path in this.routes) {
+                if (this.routes.hasOwnProperty(path) && this.routes[path].name === name) {
+                    if (params != null && typeof params === 'object') {
+                        path = path.replace(/:([a-zA-Z0-9_]+)/g, function (match, arg) {
+                            return params[arg];
+                        });
+                    }
+                    return path;
+                }
+            }
+            return null;
+        },
+
+        /**
          * Updates active links
          */
         parseLinks: function () {
@@ -272,9 +292,10 @@
          * Executes a callback when the route is reached
          * @param path
          * @param callback
+         * @param options
          */
-        route: function (path, callback) {
-            this.routes[path] = new Router.Route(path, callback);
+        route: function (path, callback, options) {
+            this.routes[path] = new Router.Route(path, callback, options);
         }
     };
 
@@ -282,11 +303,13 @@
      * Creates a route
      * @param path
      * @param callback
+     * @param options
      * @constructor
      */
-    Router.Route = function (path, callback) {
+    Router.Route = function (path, callback, options) {
         this.events = {};
         this.callback = callback;
+        this.name = options ? options.name : null;
         this.path = path;
         this.params = null;
     };

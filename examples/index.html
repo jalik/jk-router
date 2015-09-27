@@ -60,10 +60,14 @@
         this.on('leave', function () {
             console.log('good bye Home');
         });
+    }, {
+        name: 'home'
     });
 
     Router.route('/page/:id', function () {
         this.render($('#page' + this.params.id).html());
+    }, {
+        name: 'page'
     });
 
     Router.route('/forbidden', function () {
