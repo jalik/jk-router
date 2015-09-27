@@ -22,6 +22,9 @@ If you named a route using options, you can refer to this route later in the cod
 
 ```js
 console.log("Home path is " + Router.path('home'));
+
+// Path with parameters like (/page/:id)
+console.log("Geek's page path is " + Router.path('page', {id : 1337}));
 ```
 
 ## Render the content of a route
