@@ -39,6 +39,8 @@
         }
     }
 
+    var enabled = true;
+
     /**
      * The router
      * @type {{}}
@@ -79,6 +81,20 @@
          * @type {string}
          */
         target: 'yield',
+
+        /**
+         * Disables router
+         */
+        disable: function () {
+            enabled = false;
+        },
+
+        /**
+         * Enables router
+         */
+        enable: function () {
+            enabled = true;
+        },
 
         /**
          * Checks if the route exists
@@ -192,6 +208,11 @@
         refresh: function () {
             var self = this;
 
+            // Ignore if router is disabled
+            if (!enabled) {
+                return;
+            }
+
             // Get the current hash
             var path = window.location.hash.replace(/^#/, '');
 
@@ -252,14 +273,23 @@
                     trigger('route', route);
                 }
 
+                var previousPath = self.history.pop();
+
+                // Execute the previous route leave event
+                if (previousPath !== path && self.currentRoute && typeof self.currentRoute.events.leave === 'function') {
+                    var result = self.currentRoute.events.leave.call(self.currentRoute);
+
+                    if (result === false) {
+                        self.disable();
+                        window.location.hash = '#' + previousPath;
+                        setTimeout(self.enable, 100);
+                        return false;
+                    }
+                }
+
                 // Add the route in the history
                 if (self.getLastPath() !== path) {
                     self.history.push(path);
-                }
-
-                // Execute the previous route leave event
-                if (self.currentRoute && typeof self.currentRoute.events.leave === 'function') {
-                    self.currentRoute.events.leave.call(self.currentRoute);
                 }
 
                 // Update the current route
@@ -394,8 +424,11 @@
             Router.refresh();
         }
         // Watch any changes in the path
-        window.addEventListener('hashchange', function () {
-            Router.refresh();
+        window.addEventListener('hashchange', function (ev) {
+            if (!Router.refresh()) {
+                ev.preventDefault();
+                return false;
+            }
         });
     });
 

@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2015 Karl STEIN
+  ~ Copyright (c) 2016 Karl STEIN
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@
     Router.autoRun = true;
 
     Router.on('route', function () {
-        console.log('routing to ' + this.path);
+        console.log('go to ' + this.path);
     });
 
     Router.on('beforeRender', function () {
@@ -66,6 +66,12 @@
 
     Router.route('/page/:id', function () {
         this.render($('#page' + this.params.id).html());
+        this.on('leave', function () {
+            var field = $('[name="field"]').val();
+            if (field) {
+                return confirm('Are you sure you want to quit this page ?');
+            }
+        });
     }, {
         name: 'page'
     });
@@ -138,13 +144,10 @@
             bibendum ut ac ligula. Vivamus interdum sem ac eleifend scelerisque. Proin vel facilisis justo.</p>
     </div>
     <div id="page3">
-        <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nunc pretium orci
-            odio, ac sodales lorem pellentesque id. Aenean auctor porta justo ac imperdiet. Vivamus elementum, sem vel
-            porttitor dictum, augue felis rhoncus nisi, sit amet pretium purus mauris ac risus. Maecenas egestas eu
-            tellus eget pellentesque. In hac habitasse platea dictumst. Maecenas a felis quis lacus interdum suscipit
-            quis vel purus. Suspendisse nec ultrices nunc, et ultricies tellus. Class aptent taciti sociosqu ad litora
-            torquent per conubia nostra, per inceptos himenaeos. Phasellus libero erat, pellentesque porta sem nec,
-            dapibus ornare diam.</p>
+        <form>
+            <label>Edit this field and go to another page</label>
+            <input type="text" name="field">
+        </form>
     </div>
     <div id="not-found">
         <h2>Page not found</h2>
