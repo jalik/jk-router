@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Karl STEIN
+ * Copyright (c) 2016 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -91,7 +91,7 @@
 
         /**
          * Returns the last path
-         * @return {string}
+         * @return {string|null}
          */
         getLastPath: function () {
             var historySize = this.history.length;
@@ -317,7 +317,6 @@
     /**
      * Hooks a callback to an event
      * @param event
-     * @param path
      * @param callback
      */
     Router.Route.prototype.on = function (event, callback) {
