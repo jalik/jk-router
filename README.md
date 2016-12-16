@@ -1,6 +1,6 @@
 # Router.js
 
-This lib offers a simple and quick routing solution for a SAP (Single Page Application), it uses the hash (#) part of the URL for navigation. It supports static and dynamic routes and events.
+This lib offers a simple and quick routing solution for a SPA (Single Page Application), it uses the hash (#) part of the URL for navigation. It supports static and dynamic routes and events.
 
 ## Creating a route
 
@@ -71,7 +71,7 @@ Router.route('/hello', function() {
 });
 ```
 
-#### Custom renderering
+#### Custom rendering
 
 The default behavior of the `render()` method is to display the text given as the first argument, but almost everyone use templates nowadays.
 To use your favourite template engine, you must override the `Router.render(content, data, target)` method.
@@ -114,7 +114,8 @@ Router.route('/home', function() {
     this.render("Welcome home");
     // Execute code when we change route
     this.on('leave', function() {
-      console.log("Good bye home");
+      console.log("Stay at home");
+      return false; // return false to cancel routing and force user to stay on the current page
     });
 });
 ```
@@ -124,13 +125,13 @@ Router.route('/home', function() {
 As for a route, you can hook functions to router's events by using the `Router.on(event, callback)` method.
 
 ```js
-Router.on("route", function(){
+Router.on('route', function(){
   console.log("routing to " + this.path);
 });
-Router.on("beforeRender", function(){
+Router.on('beforeRender', function(){
   console.log("before rendering " + this.path);
 });
-Router.on("afterRender", function(){
+Router.on('afterRender', function(){
   console.log("after rendering " + this.path);
 });
 ```
