@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Karl STEIN
+ * Copyright (c) 2017 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,29 @@
  * SOFTWARE.
  */
 
-(function () {
-    'use strict';
+(function (window) {
+    "use strict";
 
-    var redirecting = false;
-    var hooks = {};
+    let redirecting = false;
+    let hooks = {};
+    let enabled = true;
 
     function trigger() {
-        var event = arguments[0];
-        var thisObj = arguments[1];
+        let event = arguments[0];
+        let thisObj = arguments[1];
 
         if (hooks.hasOwnProperty(event)) {
-            for (var i = 0; i < hooks[event].length; i += 1) {
+            for (let i = 0; i < hooks[event].length; i += 1) {
                 hooks[event][i].call(thisObj);
             }
         }
     }
 
-    var enabled = true;
-
     /**
      * The router
      * @type {{}}
      */
-    window.Router = {
+    const Router = {
         /**
          * Render the current path when the page is loaded
          * @type {boolean}
@@ -80,19 +79,19 @@
          * The target element where the router will render the page
          * @type {string}
          */
-        target: 'yield',
+        target: "yield",
 
         /**
          * Disables router
          */
-        disable: function () {
+        disable() {
             enabled = false;
         },
 
         /**
          * Enables router
          */
-        enable: function () {
+        enable() {
             enabled = true;
         },
 
@@ -101,7 +100,7 @@
          * @param path
          * @return {boolean}
          */
-        exists: function (path) {
+        exists(path) {
             return this.routes[path] instanceof Router.Route;
         },
 
@@ -109,8 +108,9 @@
          * Returns the last path
          * @return {string|null}
          */
-        getLastPath: function () {
-            var historySize = this.history.length;
+        getLastPath() {
+            const historySize = this.history.length;
+
             if (historySize > 0) {
                 return this.history[historySize - 1];
             }
@@ -121,16 +121,16 @@
          * Changes the current path
          * @param path
          */
-        go: function (path) {
-            window.location.hash = '#' + path;
+        go(path) {
+            window.location.hash = "#" + path;
         },
 
         /**
          * Goes to the last path
          */
-        goBack: function () {
+        goBack() {
             this.history.pop();
-            var path = this.history.pop();
+            const path = this.history.pop();
             if (path) this.go(path);
         },
 
@@ -139,9 +139,9 @@
          * @param event
          * @param callback
          */
-        off: function (event, callback) {
+        off(event, callback) {
             if (hooks[event] instanceof Array) {
-                var index = hooks[event].indexOf(callback);
+                const index = hooks[event].indexOf(callback);
 
                 if (index !== -1) {
                     hooks[event].splice(index, 1);
@@ -154,12 +154,12 @@
          * @param event
          * @param callback
          */
-        on: function (event, callback) {
-            if (typeof event !== 'string') {
-                throw new Error('event is not a string');
+        on(event, callback) {
+            if (typeof event !== "string") {
+                throw new Error("event is not a string");
             }
-            if (typeof callback !== 'function') {
-                throw new Error('callback is not a function');
+            if (typeof callback !== "function") {
+                throw new Error("callback is not a function");
             }
             if (!(hooks[event] instanceof Array)) {
                 hooks[event] = [];
@@ -173,10 +173,10 @@
          * @param params
          * @return {*}
          */
-        path: function (name, params) {
-            for (var path in this.routes) {
+        path(name, params) {
+            for (let path in this.routes) {
                 if (this.routes.hasOwnProperty(path) && this.routes[path].name === name) {
-                    if (params != null && typeof params === 'object') {
+                    if (params && typeof params === "object") {
                         path = path.replace(/:([a-zA-Z0-9_]+)/g, function (match, arg) {
                             return params[arg];
                         });
@@ -190,23 +190,25 @@
         /**
          * Updates active links
          */
-        parseLinks: function () {
-            var links = document.body.querySelectorAll('a.active');
-            for (var i = 0; i < links.length; i += 1) {
-                links[i].className = links[i].className.replace(' active', '');
+        parseLinks() {
+            let links = document.body.querySelectorAll("a.active");
+
+            for (let i = 0; i < links.length; i += 1) {
+                links[i].className = links[i].className.replace(" active", "");
             }
 
-            links = document.body.querySelectorAll('a[href="' + location.hash + '"]');
-            for (i = 0; i < links.length; i += 1) {
-                links[i].className += ' active';
+            links = document.body.querySelectorAll("a[href=\"" + location.hash + "\"]");
+
+            for (let i = 0; i < links.length; i += 1) {
+                links[i].className += " active";
             }
         },
 
         /**
          * Refreshes the route
          */
-        refresh: function () {
-            var self = this;
+        refresh() {
+            const self = this;
 
             // Ignore if router is disabled
             if (!enabled) {
@@ -214,14 +216,14 @@
             }
 
             // Get the current hash
-            var path = window.location.hash.replace(/^#/, '');
+            let path = window.location.hash.replace(/^#/, "");
 
             if (!path) {
-                if (self.exists('/')) {
-                    self.go('/');
+                if (self.exists("/")) {
+                    self.go("/");
                 }
             } else {
-                var route = null;
+                let route = null;
 
                 // Reset redirection status
                 redirecting = false;
@@ -232,14 +234,14 @@
 
                 } else {
                     // Check if it is a dynamic route
-                    for (var tmpPath in self.routes) {
-                        if (self.routes.hasOwnProperty(tmpPath) && tmpPath.indexOf(':') !== -1) {
-                            var varPattern = new RegExp(tmpPath.replace(new RegExp(':[^/]+', 'g'), ':([^/]+)'));
-                            var valuePattern = new RegExp(tmpPath.replace(new RegExp(':[^/]+', 'g'), '([^/]+)'));
-                            var keys = varPattern.exec(tmpPath);
-                            var values = valuePattern.exec(path);
+                    for (let tmpPath in self.routes) {
+                        if (self.routes.hasOwnProperty(tmpPath) && tmpPath.indexOf(":") !== -1) {
+                            let varPattern = new RegExp(tmpPath.replace(new RegExp(":[^/]+", "g"), ":([^/]+)"));
+                            let valuePattern = new RegExp(tmpPath.replace(new RegExp(":[^/]+", "g"), "([^/]+)"));
+                            let keys = varPattern.exec(tmpPath);
+                            let values = valuePattern.exec(path);
 
-                            if (keys && keys.length > 1 && values && values.length == keys.length) {
+                            if (keys && keys.length > 1 && values && values.length === keys.length) {
                                 keys.shift();
                                 values.shift();
 
@@ -247,7 +249,7 @@
                                 route = self.routes[tmpPath];
                                 route.params = {};
 
-                                for (var j in keys) {
+                                for (let j in keys) {
                                     if (keys.hasOwnProperty(j)) {
                                         if (/[0-9]+/.test(j)) {
                                             route.params[keys[j]] = values[j];
@@ -264,24 +266,24 @@
                 }
 
                 if (!route) {
-                    console.error('No route defined for ' + path);
+                    console.error("No route defined for " + path);
 
-                    if (typeof self.notFound === 'function') {
+                    if (typeof self.notFound === "function") {
                         route = new Router.Route(path, self.notFound);
                     }
                 } else {
-                    trigger('route', route);
+                    trigger("route", route);
                 }
 
-                var previousPath = self.history.pop();
+                let previousPath = self.history.pop();
 
                 // Execute the previous route leave event
-                if (previousPath !== path && self.currentRoute && typeof self.currentRoute.events.leave === 'function') {
-                    var result = self.currentRoute.events.leave.call(self.currentRoute);
+                if (previousPath !== path && self.currentRoute && typeof self.currentRoute.events.leave === "function") {
+                    let result = self.currentRoute.events.leave.call(self.currentRoute);
 
                     if (result === false) {
                         self.disable();
-                        window.location.hash = '#' + previousPath;
+                        window.location.hash = "#" + previousPath;
                         setTimeout(self.enable, 100);
                         return false;
                     }
@@ -307,11 +309,11 @@
          * @param data
          * @param target
          */
-        render: function (content, data, target) {
-            if (typeof target === 'string') {
+        render(content, data, target) {
+            if (typeof target === "string") {
                 target = document.getElementById(target);
             }
-            if (typeof target === 'object') {
+            if (typeof target === "object") {
                 if (target instanceof Element) {
                     target.innerHTML = content;
                 }
@@ -324,7 +326,7 @@
          * @param callback
          * @param options
          */
-        route: function (path, callback, options) {
+        route(path, callback, options) {
             this.routes[path] = new Router.Route(path, callback, options);
         }
     };
@@ -351,7 +353,7 @@
      */
     Router.Route.prototype.on = function (event, callback) {
         switch (event) {
-            case 'leave':
+            case "leave":
                 this.events.leave = callback;
                 break;
         }
@@ -373,26 +375,26 @@
      */
     Router.Route.prototype.render = function (content, options) {
         options = options || {};
-        var route = this;
-        var data = {};
-        var target = options.target || Router.target;
+        let route = this;
+        let data = {};
+        let target = options.target || Router.target;
 
         // Find the target element
-        if (typeof target === 'string') {
+        if (typeof target === "string") {
             target = document.getElementById(target);
         }
         // Check target
         if (!(target instanceof Element)) {
-            throw new Error('Target is not valid for route : ' + route.path)
+            throw new Error("Target is not valid for route : " + route.path)
         }
 
         // Merge data
         if (options.data) {
-            if (typeof options.data === 'function') {
+            if (typeof options.data === "function") {
                 data = options.data.call(route);
 
-            } else if (typeof options.data === 'object') {
-                for (var key in options.data) {
+            } else if (typeof options.data === "object") {
+                for (let key in options.data) {
                     if (options.data.hasOwnProperty(key)) {
                         data.key = options.data[key];
                     }
@@ -401,11 +403,11 @@
         }
 
         // Execute before render callbacks
-        trigger('beforeRender', this);
+        trigger("beforeRender", this);
 
         if (!redirecting) {
             // Remove the previous content
-            target.innerHTML = '';
+            target.innerHTML = "";
 
             // Render the template
             Router.render.call(route, content, data, target);
@@ -414,17 +416,17 @@
             Router.parseLinks();
 
             // Execute before render callbacks
-            trigger('afterRender', this);
+            trigger("afterRender", this);
         }
     };
 
     // Render the path when the DOM is ready
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
         if (Router.autoRun) {
             Router.refresh();
         }
         // Watch any changes in the path
-        window.addEventListener('hashchange', function (ev) {
+        window.addEventListener("hashchange", function (ev) {
             if (!Router.refresh()) {
                 ev.preventDefault();
                 return false;
@@ -432,4 +434,8 @@
         });
     });
 
-})();
+    if (window) {
+        window.Router = Router;
+    }
+
+})(window);
