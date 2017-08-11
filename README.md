@@ -1,4 +1,4 @@
-# Router.js
+# jk-router
 
 This lib offers a simple and quick routing solution for a SPA (Single Page Application), it uses the hash (#) part of the URL for navigation. It supports static and dynamic routes and events.
 
@@ -11,6 +11,8 @@ Each time the route is reached, the callback is called.
 Inside the callback, `this` refers to the current route object.
 
 ```js
+import {Router} from "jk-router";
+
 Router.route('/', function() {
     console.log("current route", this);
 }, {
@@ -23,6 +25,8 @@ Router.route('/', function() {
 To create a dynamic route, you have to use the following syntax :
 
 ```js
+import {Router} from "jk-router";
+
 Router.route('/page/:_id/:slug', function() {
     var pageID = this.params._id;
     var pageSlug = this.params.slug;
@@ -37,6 +41,8 @@ Router.route('/page/:_id/:slug', function() {
 If you gave a name to a route, you can refer to this route in the code by calling `Router.path(name)`.
 
 ```js
+import {Router} from "jk-router";
+
 // Static route
 console.log("Home path : " + Router.path('home'));
 
@@ -61,6 +67,8 @@ By default the `target` is an element with the attribute `id="yield"`.
 ```
 
 ```js
+import {Router} from "jk-router";
+
 Router.route('/hello', function() {
     // You can define your own container per route
     this.render("Hello world", {
@@ -79,6 +87,8 @@ This method is called by the `Route.render()` method.
 The following example uses `Handlebars` as the template engine.
 
 ```js
+import {Router} from "jk-router";
+
 // Rendering with Handlebars
 Router.render = function(content, data, target) {
     var template = Handlebars.compile(content);
@@ -97,6 +107,8 @@ Router.route('/hello/:name', function() {
 If there is no route defined for a path, you can handle the error by setting the `Router.notFound` attribute.
 
 ```js
+import {Router} from "jk-router";
+
 // Display a custom message
 Router.notFound = function() {
     this.render("The page at " + this.path +" does not exist.");
@@ -110,6 +122,8 @@ Router.notFound = function() {
 You can execute code when a special route event is triggered by using the `on(event, callback)` method of a `Route` object.
 
 ```js
+import {Router} from "jk-router";
+
 Router.route('/home', function() {
     this.render("Welcome home");
     // Execute code when we change route
@@ -125,13 +139,15 @@ Router.route('/home', function() {
 As for a route, you can hook functions to router's events by using the `Router.on(event, callback)` method.
 
 ```js
-Router.on('route', function(){
+import {Router} from "jk-router";
+
+Router.on('route', function() {
   console.log("routing to " + this.path);
 });
-Router.on('beforeRender', function(){
+Router.on('beforeRender', function() {
   console.log("before rendering " + this.path);
 });
-Router.on('afterRender', function(){
+Router.on('afterRender', function() {
   console.log("after rendering " + this.path);
 });
 ```
@@ -155,8 +171,20 @@ In your HTML files, you just have to use the path you declared for the route you
 You can access a route by calling the `Router.go(path)` method.
 
 ```js
+import {Router} from "jk-router";
+
 // Go to the contact page
 Router.go('/contact');
+
 // Go back
 Router.goBack();
 ```
+
+## Changelog
+
+### v0.2.5
+- Publish to NPM, uses import/export module syntax
+
+## License
+
+This project is released under the [MIT License](http://www.opensource.org/licenses/MIT).
