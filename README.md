@@ -13,10 +13,11 @@ Inside the callback, `this` refers to the current route object.
 ```js
 import {Router} from "jk-router";
 
-Router.route('/', function() {
-    console.log("current route", this);
-}, {
-    name : 'home'
+Router.route("/", {
+    name : "home",
+    action() {
+      console.log("current route", this);
+    }
 });
 ```
 
@@ -27,12 +28,13 @@ To create a dynamic route, you have to use the following syntax :
 ```js
 import {Router} from "jk-router";
 
-Router.route('/page/:_id/:slug', function() {
-    var pageID = this.params._id;
-    var pageSlug = this.params.slug;
-    console.log("page params", this.params);
-}, {
-    name : 'page'
+Router.route("/page/:_id/:slug", {
+    name : "page",
+    action() {
+        var pageID = this.params._id;
+        var pageSlug = this.params.slug;
+        console.log("page params", this.params);
+    }
 });
 ```
 
@@ -44,11 +46,11 @@ If you gave a name to a route, you can refer to this route in the code by callin
 import {Router} from "jk-router";
 
 // Static route
-console.log("Home path : " + Router.path('home'));
+console.log("Home path : " + Router.path("home"));
 
 // Dynamic route
-var params = {id : 1337, slug: 'dynamic-page'};
-console.log("Page N°1337 : " + Router.path('page', params));
+var params = {id : 1337, slug: "dynamic-page"};
+console.log("Page N°1337 : " + Router.path("page", params));
 ```
 
 ## Rendering the content of a route
@@ -69,13 +71,15 @@ By default the `target` is an element with the attribute `id="yield"`.
 ```js
 import {Router} from "jk-router";
 
-Router.route('/hello', function() {
-    // You can define your own container per route
-    this.render("Hello world", {
-        target: "content" || document.getElementById('yield')
-    });
-    // Or render to the default container
-    this.render("Hello world");
+Router.route("/hello", {
+    action() {
+        // You can define your own container per route
+        this.render("Hello world", {
+            target: "content"
+        });
+        // Or render to the default container
+        this.render("Hello world");
+    }
 });
 ```
 
@@ -95,10 +99,14 @@ Router.render = function(content, data, target) {
     target.innerHTML = template(data);
 };
 
-Router.route('/hello/:name', function() {
-    this.render("Hello {{name}}", {
-        data: {name: this.params.name}
-    });
+Router.route("/hello/:name", {
+    action() {
+        this.render("Hello {{name}}", {
+            data: {
+                name: this.params.name
+            }
+        });
+    }
 });
 ```
 
@@ -124,13 +132,15 @@ You can execute code when a special route event is triggered by using the `on(ev
 ```js
 import {Router} from "jk-router";
 
-Router.route('/home', function() {
-    this.render("Welcome home");
-    // Execute code when we change route
-    this.on('leave', function() {
-      console.log("Stay at home");
-      return false; // return false to cancel routing and force user to stay on the current page
-    });
+Router.route("/home", {
+    action() {
+        this.render("Welcome home");
+        // Execute code when we change route
+        this.on("leave", function() {
+          console.log("Stay at home");
+          return false; // return false to cancel routing and force user to stay on the current page
+        });
+    }
 });
 ```
 
@@ -141,13 +151,15 @@ As for a route, you can hook functions to router's events by using the `Router.o
 ```js
 import {Router} from "jk-router";
 
-Router.on('route', function() {
+Router.on("route", function() {
   console.log("routing to " + this.path);
 });
-Router.on('beforeRender', function() {
+
+Router.on("beforeRender", function() {
   console.log("before rendering " + this.path);
 });
-Router.on('afterRender', function() {
+
+Router.on("afterRender", function() {
   console.log("after rendering " + this.path);
 });
 ```
@@ -174,13 +186,17 @@ You can access a route by calling the `Router.go(path)` method.
 import {Router} from "jk-router";
 
 // Go to the contact page
-Router.go('/contact');
+Router.go("/contact");
 
 // Go back
 Router.goBack();
 ```
 
 ## Changelog
+
+### v0.2.7
+- Changes `Router.route()` signature to `Router.route(path, options)`
+- Fixes import from NPM package
 
 ### v0.2.5
 - Publish to NPM, uses import/export module syntax

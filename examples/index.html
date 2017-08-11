@@ -25,88 +25,125 @@
 
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>jk-router</title>
+
+    <!-- Stylesheets -->
     <link href="styles.css" rel="stylesheet"/>
-    <script src="libs/jquery-2.1.3.min.js"></script>
-    <script src="../dist/jk-router.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+            integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+            integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+            crossorigin="anonymous"></script>
+    <script src="../dist/jk-router.js"></script>
+    <script src="./routes.js"></script>
 </head>
-
-<script>
-    Router.autoRun = true;
-
-    Router.on('route', function () {
-        console.log('go to ' + this.path);
-    });
-
-    Router.on('beforeRender', function () {
-        console.log('before ' + this.path);
-    });
-
-    Router.on('afterRender', function () {
-        console.log('after ' + this.path);
-    });
-
-    // Declare not found route
-    Router.notFound = function () {
-        this.render($('#not-found').html());
-    };
-
-    // Declare root route
-    Router.route('/', function () {
-        this.render($('#home').html());
-        this.on('leave', function () {
-            console.log('good bye Home');
-        });
-    }, {
-        name: 'home'
-    });
-
-    Router.route('/page/:id', function () {
-        this.render($('#page' + this.params.id).html());
-        this.on('leave', function () {
-            var field = $('[name="field"]').val();
-            if (field) {
-                return confirm('Are you sure you want to quit this page ?');
-            }
-        });
-    }, {
-        name: 'page'
-    });
-
-    Router.route('/forbidden', function () {
-        this.render($('#forbidden').html());
-    });
-
-    Router.route('/private', function () {
-        this.redirect('/forbidden');
-        this.render('XXXXXXX');
-    });
-</script>
 <body>
 
-<div id="page">
-    <nav>
-        <a href="#/">Home</a>
-        <a href="#/page/1">Page 1</a>
-        <a href="#/page/2">Page 2</a>
-        <a href="#/page/3">Page 3</a>
-        <a href="#/private">Private</a>
-        <a href="#/not-found">Not found</a>
+<div id="page" class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">jk-router</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#/">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Pages
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#/pages/1">Page 1</a>
+                        <a class="dropdown-item" href="#/pages/2">Page 2</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#/form">Form</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
     </nav>
     <div id="yield">
+        <!-- Route content is displayed here -->
     </div>
-    <footer>
-        router.js - 2014
-    </footer>
 </div>
 
 <div style="display: none">
-    <div id="home">
-        Welcome
-    </div>
-    <div id="forbidden"><h2>Forbidden</h2></div>
-    <div id="page1">
+
+    <template name="account">
+        <h2>Account</h2>
+    </template>
+
+    <template name="forbidden"><h2>Forbidden</h2></template>
+
+    <template name="form">
+        <h2>Form</h2>
+        <form>
+            <div class="form-group">
+                <label>Edit this field and go to another page</label>
+                <input class="form-control" name="field">
+            </div>
+        </form>
+    </template>
+
+    <template name="home">
+        <h2>Welcome</h2>
+        <p>Duis mattis risus vitae imperdiet cursus. Cras porta, quam sed pulvinar suscipit, magna nisi laoreet nunc, ac
+            molestie urna leo id sem. Nunc elementum at quam eget accumsan. Nam sit amet blandit lacus. Ut interdum
+            velit sed cursus aliquet. Praesent dictum justo at odio condimentum consequat. Morbi ac pulvinar leo.
+            Maecenas imperdiet mollis turpis, vitae aliquet velit vestibulum sit amet. Lorem ipsum dolor sit amet,
+            consectetur adipiscing elit.</p>
+    </template>
+
+    <template name="login">
+        <h2>Login</h2>
+
+        <form>
+            <div class="form-group">
+                <label>User</label>
+                <input class="form-control" name="user">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input class="form-control" name="pass" type="password">
+            </div>
+        </form>
+    </template>
+
+    <template name="logout">
+        <h2>Logged out</h2>
+
+        <p>You have been logged out !</p>
+    </template>
+
+    <template name="not-found">
+        <h2>Page not found</h2>
+
+        <p>The page you requested does not exist</p>
+    </template>
+
+    <template name="page-1">
+        <h2>Page 1</h2>
         <p>Maecenas ex libero, ornare in lacus in, rhoncus facilisis purus. Cras pulvinar, lectus at venenatis mattis,
             nulla nibh ultricies mi, id condimentum mi nulla nec lectus. Aenean vel ex feugiat, lacinia sapien sit amet,
             rhoncus felis. Fusce in ipsum nunc. Vestibulum pretium ultrices elit euismod faucibus. Suspendisse ac
@@ -121,8 +158,10 @@
             velit sed cursus aliquet. Praesent dictum justo at odio condimentum consequat. Morbi ac pulvinar leo.
             Maecenas imperdiet mollis turpis, vitae aliquet velit vestibulum sit amet. Lorem ipsum dolor sit amet,
             consectetur adipiscing elit.</p>
-    </div>
-    <div id="page2">
+    </template>
+
+    <template name="page-2">
+        <h2>Page 2</h2>
         <p>Mauris fermentum urna sit amet nisl luctus porttitor. Quisque metus ligula, condimentum eget purus nec,
             euismod ultrices massa. Praesent ut diam rutrum, feugiat dui id, aliquet ex. Maecenas sit amet neque
             sodales, viverra ante non, interdum libero. Curabitur imperdiet velit quam, nec accumsan arcu mattis in.
@@ -140,18 +179,7 @@
             nisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec id
             vulputate ex. Nulla aliquam ligula non massa vestibulum varius. Aenean vitae nisl eget mauris feugiat
             bibendum ut ac ligula. Vivamus interdum sem ac eleifend scelerisque. Proin vel facilisis justo.</p>
-    </div>
-    <div id="page3">
-        <form>
-            <label>Edit this field and go to another page</label>
-            <input type="text" name="field">
-        </form>
-    </div>
-    <div id="not-found">
-        <h2>Page not found</h2>
-
-        <p>The page you requested does not exist</p>
-    </div>
+    </template>
 </div>
 
 </body>

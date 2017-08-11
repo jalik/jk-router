@@ -1,7 +1,8 @@
 {
   "name": "jk-router",
-  "version": "0.2.5",
+  "version": "0.2.8",
   "description": "Simple and lightweight client side router",
+  "main": "dist/jk-router.js",
   "license": "MIT",
   "author": {
     "name": "Karl STEIN",
@@ -12,6 +13,14 @@
     "type": "git",
     "url": "https://github.com/jalik/jk-router.git"
   },
+  "bugs": {
+    "url": "https://github.com/jalik/jk-router/issues"
+  },
+  "keywords": [
+    "router",
+    "routing",
+    "route"
+  ],
   "scripts": {
     "dev": "./node_modules/.bin/webpack --config webpack.config.js --watch",
     "build": "./node_modules/.bin/webpack --config webpack.config.js",

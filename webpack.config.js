@@ -30,7 +30,7 @@ const filename = Package.name + (isProd ? ".min" : "");
 module.exports = {
     target: "web",
     entry: {
-        bundle: path.join(__dirname, "src/index.js")
+        bundle: path.join(__dirname, "src/router.js")
     },
     output: {
         path: path.join(__dirname, "dist"),

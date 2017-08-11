@@ -22,48 +22,81 @@
  * SOFTWARE.
  */
 
-let redirecting = false;
-let hooks = {};
-let enabled = true;
+const hooks = {};
 
-function trigger() {
-    let event = arguments[0];
-    let thisObj = arguments[1];
+const Events = {
+    addEvent(event, callback) {
+        if (typeof event !== "string") {
+            throw new Error("event is not a string");
+        }
+        if (typeof callback !== "function") {
+            throw new Error("callback is not a function");
+        }
+        if (!(hooks[event] instanceof Array)) {
+            hooks[event] = [];
+        }
+        hooks[event].push(callback);
+    },
+    removeEvent(event, callback) {
+        if (hooks[event] instanceof Array) {
+            const index = hooks[event].indexOf(callback);
 
-    if (hooks.hasOwnProperty(event)) {
-        for (let i = 0; i < hooks[event].length; i += 1) {
-            hooks[event][i].call(thisObj);
+            if (index !== -1) {
+                hooks[event].splice(index, 1);
+            }
+        }
+    },
+    triggerEvent() {
+        const event = arguments[0];
+        const thisObj = arguments[1];
+
+        if (hooks.hasOwnProperty(event)) {
+            for (let i = 0; i < hooks[event].length; i += 1) {
+                hooks[event][i].call(thisObj);
+            }
         }
     }
-}
+};
 
 export class Route {
-    constructor(path, callback, options) {
+    constructor(path, options) {
+        options = options || {};
+
+        /**
+         * Route callback
+         * @type {function|null}
+         */
+        this.action = options.action;
+
         /**
          * Route events
          * @type {{}}
          */
         this.events = {};
-        /**
-         * Route callback
-         * @type {function}
-         */
-        this.callback = callback;
+
         /**
          * Route name
-         * @type {null|string}
+         * @type {string|null}
          */
-        this.name = options ? options.name : null;
-        /**
-         * Route path
-         * @type {string}
-         */
-        this.path = path;
+        this.name = options.name;
+
         /**
          * Route params
          * @type {null}
          */
         this.params = null;
+
+        /**
+         * Route path
+         * @type {string}
+         */
+        this.path = path;
+
+        /**
+         * The router object
+         * @type {Router}
+         */
+        this.router = options.router;
     }
 
     /**
@@ -84,8 +117,7 @@ export class Route {
      * @param path
      */
     redirect(path) {
-        redirecting = true;
-        Router.go(path);
+        this.router.go(path);
     }
 
     /**
@@ -97,7 +129,7 @@ export class Route {
         options = options || {};
         let route = this;
         let data = {};
-        let target = options.target || Router.target;
+        let target = options.target || this.router.getTarget();
 
         // Find the target element
         if (typeof target === "string") {
@@ -123,21 +155,19 @@ export class Route {
         }
 
         // Execute before render callbacks
-        trigger("beforeRender", this);
+        Events.triggerEvent("beforeRender", this);
 
-        if (!redirecting) {
-            // Remove the previous content
-            target.innerHTML = "";
+        // Remove the previous content
+        target.innerHTML = "";
 
-            // Render the template
-            Router.render.call(route, content, data, target);
+        // Render the template
+        this.router.render.call(route, content, data, target);
 
-            // Update all links in the page
-            Router.parseLinks();
+        // Update all links in the page
+        this.router.parseLinks();
 
-            // Execute before render callbacks
-            trigger("afterRender", this);
-        }
+        // Execute before render callbacks
+        Events.triggerEvent("afterRender", this);
     }
 }
 
@@ -150,9 +180,15 @@ export const Router = {
 
     /**
      * The current route
-     * @type Router.Route
+     * @type {Route}
      */
     currentRoute: null,
+
+    /**
+     * Is router enabled
+     * @type {boolean}
+     */
+    enabled: true,
 
     /**
      * The previous path of the router
@@ -171,6 +207,12 @@ export const Router = {
      * @type {function}
      */
     notFound: null,
+
+    /**
+     * Is router refreshing
+     * @type {boolean}
+     */
+    redirecting: false,
 
     /**
      * The routes
@@ -194,14 +236,14 @@ export const Router = {
      * Disables router
      */
     disable() {
-        enabled = false;
+        this.enabled = false;
     },
 
     /**
      * Enables router
      */
     enable() {
-        enabled = true;
+        this.enabled = true;
     },
 
     /**
@@ -210,7 +252,15 @@ export const Router = {
      * @return {boolean}
      */
     exists(path) {
-        return this.routes[path] instanceof Router.Route;
+        return this.routes[path] instanceof Route;
+    },
+
+    /**
+     * Returns the current route
+     * @return {Route}
+     */
+    getCurrentRoute() {
+        return this.currentRoute;
     },
 
     /**
@@ -227,10 +277,28 @@ export const Router = {
     },
 
     /**
+     * Returns all routes
+     * @return {{}}
+     */
+    getRoutes() {
+        return this.routes;
+    },
+
+    /**
+     * Returns router target
+     * @return {string}
+     */
+    getTarget() {
+        return this.target;
+    },
+
+    /**
      * Changes the current path
      * @param path
+     * @todo allow to pass params
      */
     go(path) {
+        this.redirecting = true;
         window.location.hash = "#" + path;
     },
 
@@ -244,18 +312,36 @@ export const Router = {
     },
 
     /**
+     * Returns router history
+     * @return {Array}
+     */
+    getHistory() {
+        return this.history;
+    },
+
+    /**
+     * Is router enabled
+     * @return {boolean}
+     */
+    isEnabled() {
+        return this.enabled === true;
+    },
+
+    /**
+     * Is router redirecting
+     * @return {boolean}
+     */
+    isRedirecting() {
+        return this.redirecting === true;
+    },
+
+    /**
      * Removes a callback from an event
      * @param event
      * @param callback
      */
     off(event, callback) {
-        if (hooks[event] instanceof Array) {
-            const index = hooks[event].indexOf(callback);
-
-            if (index !== -1) {
-                hooks[event].splice(index, 1);
-            }
-        }
+        Events.removeEvent(event, callback);
     },
 
     /**
@@ -264,16 +350,7 @@ export const Router = {
      * @param callback
      */
     on(event, callback) {
-        if (typeof event !== "string") {
-            throw new Error("event is not a string");
-        }
-        if (typeof callback !== "function") {
-            throw new Error("callback is not a function");
-        }
-        if (!(hooks[event] instanceof Array)) {
-            hooks[event] = [];
-        }
-        hooks[event].push(callback);
+        Events.addEvent(event, callback);
     },
 
     /**
@@ -303,7 +380,7 @@ export const Router = {
         let links = document.body.querySelectorAll("a.active");
 
         for (let i = 0; i < links.length; i += 1) {
-            links[i].className = links[i].className.replace(" active", "");
+            links[i].className = links[i].className.replace("active", "");
         }
 
         links = document.body.querySelectorAll("a[href=\"" + location.hash + "\"]");
@@ -320,7 +397,7 @@ export const Router = {
         const self = this;
 
         // Ignore if router is disabled
-        if (!enabled) {
+        if (!this.enabled) {
             return;
         }
 
@@ -335,7 +412,7 @@ export const Router = {
             let route = null;
 
             // Reset redirection status
-            redirecting = false;
+            this.redirecting = false;
 
             if (self.exists(path)) {
                 // Update current route
@@ -378,17 +455,25 @@ export const Router = {
                 console.error("No route defined for " + path);
 
                 if (typeof self.notFound === "function") {
-                    route = new Router.Route(path, self.notFound);
+                    route = new Route(path, {
+                        name: "notFound",
+                        action: self.notFound,
+                        router: self
+                    });
+                } else if (self.notFound instanceof Route) {
+                    self.notFound.router = self;
+                    route = self.notFound;
                 }
             } else {
-                trigger("route", route);
+                Events.triggerEvent("route", route);
             }
 
             let previousPath = self.history.pop();
+            const currentRoute = self.getCurrentRoute();
 
             // Execute the previous route leave event
-            if (previousPath !== path && self.currentRoute && typeof self.currentRoute.events.leave === "function") {
-                let result = self.currentRoute.events.leave.call(self.currentRoute);
+            if (previousPath !== path && currentRoute && typeof currentRoute.events.leave === "function") {
+                let result = currentRoute.events.leave.call(currentRoute);
 
                 if (result === false) {
                     self.disable();
@@ -407,7 +492,7 @@ export const Router = {
             self.currentRoute = route;
 
             // Execute the route callback
-            self.currentRoute.callback.call(self.currentRoute);
+            self.currentRoute.action.call(self.currentRoute);
         }
     },
 
@@ -430,13 +515,25 @@ export const Router = {
     },
 
     /**
-     * Executes a callback when the route is reached
+     * Declares a route
      * @param path
-     * @param callback
      * @param options
+     * @param deprecated_options
      */
-    route(path, callback, options) {
-        this.routes[path] = new Router.Route(path, callback, options);
+    route(path, options, deprecated_options) {
+        // Old signature
+        if (typeof options === "function") {
+            console.warn("Router.route(string, function, object) is deprecated, use Router.route(string, options) instead");
+            deprecated_options = deprecated_options || {};
+            deprecated_options.action = options;
+            options = deprecated_options;
+        }
+
+        // Pass the router to the route
+        options.router = this;
+
+        // Creates a new route
+        this.routes[path] = new Route(path, options);
     }
 };
 
@@ -458,3 +555,5 @@ document.addEventListener("DOMContentLoaded", function () {
 if (typeof window === "object" && window !== null) {
     window.Router = Router;
 }
+
+export default Router;
