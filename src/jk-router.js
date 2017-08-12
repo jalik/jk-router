@@ -537,23 +537,23 @@ export const Router = {
     }
 };
 
-// Render the path when the DOM is ready
-document.addEventListener("DOMContentLoaded", function () {
-    if (Router.autoRun) {
-        Router.refresh();
-    }
-    // Watch any changes in the path
-    window.addEventListener("hashchange", function (ev) {
-        if (!Router.refresh()) {
-            ev.preventDefault();
-            return false;
+if (typeof document === "object" && document !== null) {
+    // Render the path when the DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        if (Router.autoRun) {
+            Router.refresh();
         }
+        // Watch any changes in the path
+        window.addEventListener("hashchange", function (ev) {
+            if (!Router.refresh()) {
+                ev.preventDefault();
+                return false;
+            }
+        });
     });
-});
+}
 
 // Expose global variable
 if (typeof window === "object" && window !== null) {
     window.Router = Router;
 }
-
-export default Router;

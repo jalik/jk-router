@@ -1,9 +1,9 @@
+.babelrc
 .idea
 /examples
 node_modules
 /src
 /test
-.babelrc
 .gitignore
 *.iml
 package-lock.json

@@ -194,7 +194,7 @@ Router.goBack();
 
 ## Changelog
 
-### v0.2.7
+### v0.2.9
 - Changes `Router.route()` signature to `Router.route(path, options)`
 - Fixes import from NPM package
 
