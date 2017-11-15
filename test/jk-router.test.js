@@ -22,4 +22,21 @@
  * SOFTWARE.
  */
 
-const Router = require('../dist/jk-router').Router;
+const Router = require("../src/jk-router").Router;
+
+
+describe(`Route`, () => {
+
+    it(`should be importable from package`, () => {
+        expect(Router).not.toBe(null);
+        expect(Router).not.toBe(undefined);
+    });
+});
+
+describe(`Router`, () => {
+
+    it(`should be importable from package`, () => {
+        expect(Router).not.toBe(null);
+        expect(Router).not.toBe(undefined);
+    });
+});

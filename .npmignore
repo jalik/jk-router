@@ -1,10 +1,9 @@
 .babelrc
 .idea
-/examples
+examples
 node_modules
-/src
-/test
+src
+test
 .gitignore
 *.iml
-package-lock.json
 webpack.config.js

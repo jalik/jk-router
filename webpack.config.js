@@ -29,7 +29,7 @@ const filename = Package.name + (isProd ? ".min" : "");
 
 module.exports = {
     entry: {
-        bundle: path.join(__dirname, "src", `${filename}.js`)
+        bundle: path.join(__dirname, "src", `${Package.name}.js`)
     },
     output: {
         libraryTarget: "umd",
