@@ -1,6 +1,11 @@
+# Ignore project settings
 .idea
-.npm
-dist
+*.iml
+
+# Ignore npm files
 node_modules
 npm-debug.log
-*.iml
+
+# Ignore compiled sources
+aio
+dist

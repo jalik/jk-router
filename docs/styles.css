@@ -22,20 +22,10 @@
  * SOFTWARE.
  */
 
-const Router = require("../src/jk-router").Router;
+#page {
+    margin: 20px auto;
+}
 
-describe(`Route`, () => {
-
-    it(`should be importable from package`, () => {
-        expect(Router).not.toBe(null);
-        expect(Router).not.toBe(undefined);
-    });
-});
-
-describe(`Router`, () => {
-
-    it(`should be importable from package`, () => {
-        expect(Router).not.toBe(null);
-        expect(Router).not.toBe(undefined);
-    });
-});
+#yield {
+    padding: 2em 1em;
+}

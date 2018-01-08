@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,29 @@
  * SOFTWARE.
  */
 
-#page {
-    margin: 20px auto;
-}
+const gulp = require("gulp");
+const babel = require("gulp-babel");
+const stripComments = require("gulp-strip-comments");
+const watch = require("gulp-watch");
+const distPath = "dist";
 
-#yield {
-    padding: 2em 1em;
-}
+// Compile JavaScript files
+gulp.task("build", () => {
+    return gulp.src([
+        "src/**/*.js"
+    ])
+        .pipe(babel({presets: ["env"]}))
+        .pipe(stripComments())
+        .pipe(gulp.dest(distPath));
+});
+
+// Compile source files
+gulp.task("default", ["build"]);
+
+// Prepare files for publication
+gulp.task("prepublish", ["build"]);
+
+// Rebuild automatically
+gulp.task("watch", () => {
+    gulp.watch(["src/**/*.js"], ["build"]);
+});
