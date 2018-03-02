@@ -25,6 +25,7 @@
 const hooks = {};
 
 const Events = {
+
     addEvent(event, callback) {
         if (typeof event !== "string") {
             throw new Error("event is not a string");
@@ -37,6 +38,7 @@ const Events = {
         }
         hooks[event].push(callback);
     },
+
     removeEvent(event, callback) {
         if (hooks[event] instanceof Array) {
             const index = hooks[event].indexOf(callback);
@@ -46,6 +48,7 @@ const Events = {
             }
         }
     },
+
     triggerEvent() {
         const event = arguments[0];
         const thisObj = arguments[1];
@@ -59,6 +62,7 @@ const Events = {
 };
 
 export class Route {
+
     constructor(path, options) {
         options = options || {};
 
@@ -105,10 +109,8 @@ export class Route {
      * @param callback
      */
     on(event, callback) {
-        switch (event) {
-            case "leave":
-                this.events.leave = callback;
-                break;
+        if (event === "leave") {
+            this.events.leave = callback;
         }
     }
 

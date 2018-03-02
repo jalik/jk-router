@@ -21,17 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-var Router = window.Router;
+
+let Router = window.Router;
 
 function getTemplate(name) {
-    var tpl = $("template[name=\"" + name + "\"]");
+    let tpl = $("template[name=\"" + name + "\"]");
 
     if (tpl.length) {
         return tpl.eq(0).html();
     }
 }
 
-userIsConnected = false;
+let userIsConnected = false;
 
 Router.autoRun = true;
 
@@ -68,7 +69,7 @@ Router.route("/pages/:id", {
     action: function () {
         this.render(getTemplate("page-" + this.params.id));
         this.on("leave", function () {
-            var field = $("[name=field]").val();
+            let field = $("[name=field]").val();
             if (typeof field === "string" && field.length) {
                 return confirm("Are you sure you want to quit this page ?");
             }

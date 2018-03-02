@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/jalik/jk-router/issues"
   },
-  "main": "dist/jk-router.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "./node_modules/.bin/gulp build",
     "build:prod": "./node_modules/.bin/gulp prepublish",
@@ -32,14 +32,14 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^7.1.3",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-strip-comments": "^2.5.2",
     "gulp-watch": "^5.0.0",
     "jest": "^21.2.1",
-    "webpack": "^3.8.1"
+    "webpack": "^3.11.0"
   }
 }

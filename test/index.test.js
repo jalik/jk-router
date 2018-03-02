@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const Router = require("../src/jk-router").Router;
+const Router = require("../src/index").Router;
 
 describe(`Route`, () => {
 
