@@ -14,10 +14,10 @@ Inside the callback, `this` refers to the current route object.
 import {Router} from "jk-router";
 
 Router.route("/", {
-    name : "home",
-    action() {
-      console.log("current route", this);
-    }
+  name : "home",
+   action() {
+    console.log("current route", this);
+  }
 });
 ```
 
@@ -29,12 +29,11 @@ To create a dynamic route, you have to use the following syntax :
 import {Router} from "jk-router";
 
 Router.route("/page/:_id/:slug", {
-    name : "page",
-    action() {
-        var pageID = this.params._id;
-        var pageSlug = this.params.slug;
-        console.log("page params", this.params);
-    }
+  name : "page",
+   action() {
+    const {_id, slug} = this.params;
+    console.log("page params", this.params);
+  }
 });
 ```
 
@@ -49,7 +48,7 @@ import {Router} from "jk-router";
 console.log("Home path : " + Router.path("home"));
 
 // Dynamic route
-var params = {id : 1337, slug: "dynamic-page"};
+const params = {id : 1337, slug: "dynamic-page"};
 console.log("Page N°1337 : " + Router.path("page", params));
 ```
 
@@ -62,9 +61,9 @@ By default the `target` is an element with the attribute `id="yield"`.
 
 ```html
 <body>
-    <div id="content">
-        <!-- The router will render the content here -->
-    </div>
+  <div id="content">
+    <!-- The router will render the content here -->
+  </div>
 </body>
 ```
 
@@ -72,14 +71,14 @@ By default the `target` is an element with the attribute `id="yield"`.
 import {Router} from "jk-router";
 
 Router.route("/hello", {
-    action() {
-        // You can define your own container per route
-        this.render("Hello world", {
-            target: "content"
-        });
-        // Or render to the default container
-        this.render("Hello world");
-    }
+  action() {
+    // You can define your own container per route
+    this.render("Hello world", {
+      target: "content"
+    });
+    // Or render to the default container
+    this.render("Hello world");
+  }
 });
 ```
 
@@ -95,18 +94,18 @@ import {Router} from "jk-router";
 
 // Rendering with Handlebars
 Router.render = function(content, data, target) {
-    var template = Handlebars.compile(content);
-    target.innerHTML = template(data);
+  const template = Handlebars.compile(content);
+  target.innerHTML = template(data);
 };
 
 Router.route("/hello/:name", {
-    action() {
-        this.render("Hello {{name}}", {
-            data: {
-                name: this.params.name
-            }
-        });
-    }
+  action() {
+    this.render("Hello {{name}}", {
+      data: {
+        name: this.params.name
+      }
+    });
+  }
 });
 ```
 
@@ -119,7 +118,7 @@ import {Router} from "jk-router";
 
 // Display a custom message
 Router.notFound = function() {
-    this.render("The page at " + this.path +" does not exist.");
+  this.render("The page at " + this.path +" does not exist.");
 };
 ```
 
@@ -133,14 +132,14 @@ You can execute code when a special route event is triggered by using the `on(ev
 import {Router} from "jk-router";
 
 Router.route("/home", {
-    action() {
-        this.render("Welcome home");
-        // Execute code when we change route
-        this.on("leave", function() {
-          console.log("Stay at home");
-          return false; // return false to cancel routing and force user to stay on the current page
-        });
-    }
+  action() {
+    this.render("Welcome home");
+    // Execute code when we change route
+    this.on("leave", function() {
+      console.log("Stay at home");
+      return false; // return false to cancel routing and force user to stay on the current page
+      });
+  }
 });
 ```
 

@@ -1,21 +1,17 @@
-# Ignore projet files
-.idea
+# Project settings
+/.idea/
 *.iml
 
-# Ignore build settings
+# Tools settings
 .babelrc
 gulpfile.js
-npm-debug.log
 webpack.config.js
 
-# Ignore sources
-src
+# Sources
+/src/
 
-# Ignore tests
-test
+# Tests
+/test/
 
-# Ignore compiled package
-aio
-
-# Ignore docs
-docs
+# Docs
+/docs/

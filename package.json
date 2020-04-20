@@ -22,24 +22,22 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "./node_modules/.bin/gulp build",
-    "build:prod": "./node_modules/.bin/gulp prepublish",
-    "package": "./node_modules/.bin/webpack && ./node_modules/.bin/webpack -p",
-    "prepare": "npm run build:prod && npm test",
+    "build": "npx gulp build",
+    "package": "npx webpack --mode=production",
+    "prepare": "npx gulp prepare && npm run package",
     "prepublishOnly": "npm test",
-    "test": "jest",
-    "watch": "./node_modules/.bin/gulp watch"
+    "test": "npx jest",
+    "watch": "npx gulp watch"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.3",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.1",
-    "gulp-strip-comments": "^2.5.2",
-    "gulp-watch": "^5.0.0",
-    "jest": "^21.2.1",
-    "webpack": "^3.11.0"
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "jest": "^25.4.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
   }
 }

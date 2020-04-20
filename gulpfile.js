@@ -22,29 +22,49 @@
  * SOFTWARE.
  */
 
-const gulp = require("gulp");
-const babel = require("gulp-babel");
-const stripComments = require("gulp-strip-comments");
-const watch = require("gulp-watch");
-const distPath = "dist";
+const babel = require('gulp-babel');
+const del = require('del');
+const gulp = require('gulp');
+const path = require('path');
 
-// Compile JavaScript files
-gulp.task("build", () => {
-    return gulp.src([
-        "src/**/*.js"
-    ])
-        .pipe(babel({presets: ["env"]}))
-        .pipe(stripComments())
-        .pipe(gulp.dest(distPath));
-});
+const buildPath = path.resolve('dist');
+const srcPath = path.resolve('src');
 
-// Compile source files
-gulp.task("default", ["build"]);
+// Compile JS files
+gulp.task('build:js', () => gulp.src([
+  path.join(srcPath, '**', '*.js'),
+]).pipe(babel())
+  .pipe(gulp.dest(buildPath)));
 
-// Prepare files for publication
-gulp.task("prepublish", ["build"]);
+// Compile all files
+gulp.task('build', gulp.parallel(
+  'build:js',
+));
 
-// Rebuild automatically
-gulp.task("watch", () => {
-    gulp.watch(["src/**/*.js"], ["build"]);
-});
+// Delete previous compiled files
+gulp.task('clean', () => del([
+  buildPath,
+]));
+
+// Prepare files for production
+gulp.task('prepare', gulp.series(
+  'clean',
+  'build',
+));
+
+// Rebuild JS automatically
+gulp.task('watch:js', () => gulp.watch([
+  path.join(srcPath, '**', '*.js'),
+], gulp.parallel(
+  'build:js',
+)));
+
+// Rebuild sources automatically
+gulp.task('watch', gulp.parallel(
+  'watch:js',
+));
+
+// Default task
+gulp.task('default', gulp.series(
+  'prepare',
+));
