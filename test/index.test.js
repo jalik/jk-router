@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
-const Router = require("../src/index").Router;
+const Router = require('../src/index').Router;
 
 describe(`Route`, () => {
 
-    it(`should be importable from package`, () => {
-        expect(Router).not.toBe(null);
-        expect(Router).not.toBe(undefined);
-    });
+  it(`should be importable from package`, () => {
+    expect(Router).not.toBe(null);
+    expect(Router).not.toBe(undefined);
+  });
 });
 
 describe(`Router`, () => {
 
-    it(`should be importable from package`, () => {
-        expect(Router).not.toBe(null);
-        expect(Router).not.toBe(undefined);
-    });
+  it(`should be importable from package`, () => {
+    expect(Router).not.toBe(null);
+    expect(Router).not.toBe(undefined);
+  });
 });
